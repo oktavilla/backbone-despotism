@@ -1,0 +1,25 @@
+{
+  "license": "MIT",
+  "version": "0.1.0",
+  "name": "backbone-despotism",
+  "main": "backbone-despotism.js",
+  "description": "A Backbone replacement model that enforces property declarations",
+  "homepage": "https://github.com/Oktavilla/backbone-despotism",
+  "keywords": [
+    "backbone",
+    "strict",
+    "props",
+    "properties",
+    "model"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Oktavilla/backbone-despotism"
+  },
+  "author": "Oktavilla <https://github.com/Oktavilla>",
+  "contributors": "Listed at <https://github.com/Oktavilla/backbone-despotism/contributors>",
+  "dependencies": {
+    "underscore": ">=1.5.0",
+    "backbone": ">=1.1.2"
+  }
+}
