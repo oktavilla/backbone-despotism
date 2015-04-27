@@ -9,9 +9,8 @@
 *    }
 *  }
 *  
-*  Properties will only be `set` on the model if they exists 
-*  in the props definition and matches the type. All other properties will
-*  simply be ignored.
+*  Properties will only be `set` on the model if they exist in the props 
+*  definition and match the type. All other properties will simply be ignored.
 * 
 *  You can also define data mappings. This is useful for transforming 
 *  a model into another type of model.
@@ -24,7 +23,7 @@
 *    }   
 *  }
 * 
-*  In the example above, doing `set("firstName", "Göran")` will result in { "name": "Göran" }
+*  In the example above, doing `set("firstName", "Göran")` will result in { "name": "Göran" }.
 *  However, if you do `set({ "firstName": "Göran", "name": "Göran Smöran" })` firstName will be ignored.
 */
 (function(root, factory) {
@@ -43,22 +42,27 @@
   }
 } (this, function(exports, Backbone, _) {
   Backbone.StrictModel = Backbone.Model.extend({
-    set: function(key, val, options) {
+    set: function(key, value, options) {
       var attrs;
       if (key === null) {
         return this;
       }
-      // Handle both `"key", value` and `{key: value}` -style arguments.
+      // Handle both `key, value` and `{ key: value }` style arguments.
       if (typeof key === "object") {
         attrs = key;
-        options = val;
+        options = value;
       } else {
-        (attrs = {})[key] = val;
+        (attrs = {})[key] = value;
       }
       if (this.props) {
         attrs = mapAttributes(attrs, this.props);
       }
       Backbone.Model.prototype.set.apply(this, [attrs, options || {}]);
+    },
+    
+    unset: function (key, options) {
+      // Avoiding strict set method for unset
+      return Backbone.Model.prototype.set.call(this, key, void 0, _.extend({}, options, { unset: true }));
     }
   }, {
     type: {
@@ -81,5 +85,5 @@
       }
     });
     return attributes;
-  };
+  }
 }));
