@@ -80,7 +80,7 @@
       var foreignKey = (definition.foreignKey && !json[key]) ? definition.foreignKey : key;
       var type = definition.type || definition;
       // Check that this property exists in the json, and import it if so...
-      if (json[foreignKey] && typeof json[foreignKey] === type) {
+      if (json[foreignKey] !== undefined && typeof json[foreignKey] === type) {
         attributes[key] = json[foreignKey];
       }
     });
