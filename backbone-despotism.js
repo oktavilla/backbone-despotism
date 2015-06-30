@@ -77,7 +77,7 @@
     var attributes = {};
     _.each(props, function(definition, key) {
       // Foreign key should only be used if the "default" key does not exist in the json
-      var foreignKey = (definition.foreignKey && !json[key]) ? definition.foreignKey : key;
+      var foreignKey = (definition.foreignKey && json[key] === undefined) ? definition.foreignKey : key;
       var type = definition.type || definition;
       // Check that this property exists in the json, and import it if so...
       if (json[foreignKey] !== undefined && typeof json[foreignKey] === type) {
