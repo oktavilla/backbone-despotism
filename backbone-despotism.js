@@ -57,7 +57,7 @@
       if (this.props) {
         attrs = mapAttributes(attrs, this.props);
       }
-      Backbone.Model.prototype.set.apply(this, [attrs, options || {}]);
+      return Backbone.Model.prototype.set.apply(this, [attrs, options || {}]);
     },
     
     unset: function (key, options) {
