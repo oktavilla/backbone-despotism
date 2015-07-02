@@ -55,7 +55,7 @@
         (attrs = {})[key] = value;
       }
       if (this.props) {
-        attrs = mapAttributes(attrs, this.props);
+        attrs = mapAttributes(attrs, this.props, this.defaults);
       }
       return Backbone.Model.prototype.set.apply(this, [attrs, options || {}]);
     },
@@ -73,11 +73,11 @@
     }
   });
   
-  function mapAttributes (json, props) {
+  function mapAttributes (json, props, defaults) {
     var attributes = {};
     _.each(props, function(definition, key) {
-      // Foreign key should only be used if the "default" key does not exist in the json
-      var foreignKey = (definition.foreignKey && json[key] === undefined) ? definition.foreignKey : key;
+      // Foreign key (if it exists) should only be used if the key does not exist in the json or it has the default value
+      var foreignKey = (definition.foreignKey && (typeof json[key] === "undefined" || (defaults && json[key] === defaults[key] && typeof json[definition.foreignKey] !== "undefined"))) ? definition.foreignKey : key;
       var type = definition.type || definition;
       // Check that this property exists in the json, and import it if so...
       if (json[foreignKey] !== undefined && typeof json[foreignKey] === type) {
