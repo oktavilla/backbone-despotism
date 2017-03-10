@@ -23,8 +23,11 @@
 *    }   
 *  }
 * 
-*  In the example above, doing `set("firstName", "Göran")` will result in { "name": "Göran" }.
-*  However, if you do `set({ "firstName": "Göran", "name": "Göran Smöran" })` firstName will be ignored.
+*  In the example above, doing `new MyStrictModel({ firstName: "Göran" })` will result in a model
+*  with `{ "name": "Göran" }`. However, when just setting properties, you will need to be
+*  explicit about wanting to use the foreign mappings. For example, `myModelInstance.set({ firstName: "Sven" })`
+*  will have no effect on the model instance, but
+*  `myModelInstance.set({ firstName: "Sven" }, { useForeignKeys: true })` will.
 */
 (function(root, factory) {
   "use strict";
@@ -42,6 +45,15 @@
   }
 } (this, function(exports, Backbone, _) {
   Backbone.StrictModel = Backbone.Model.extend({
+    constructor: function(attributes, options) {
+      // Make sure that the options object when initializing a new instance of
+      // the StrictModel always has { initialize: true }
+      attributes = attributes || (attributes = {});
+      options || (options = {});
+      options.initialize = true;
+      return Backbone.Model.call(this, attributes, options);
+    },
+
     set: function(key, value, options) {
       var attrs;
       if (key === null) {
@@ -55,7 +67,7 @@
         (attrs = {})[key] = value;
       }
       if (this.props) {
-        attrs = mapAttributes(attrs, this.props, this.defaults);
+        attrs = mapAttributes(attrs, this.props, this.defaults, options);
       }
       return Backbone.Model.prototype.set.apply(this, [attrs, options || {}]);
     },
@@ -73,11 +85,18 @@
     }
   });
   
-  function mapAttributes (json, props, defaults) {
+  function mapAttributes (json, props, defaults, options) {
+    var self = this;
     var attributes = {};
+    options || (options = {});
     _.each(props, function(definition, key) {
-      // Foreign key (if it exists) should only be used if the key does not exist in the json or it has the default value
-      var foreignKey = (definition.foreignKey && (typeof json[key] === "undefined" || (defaults && json[key] === defaults[key] && typeof json[definition.foreignKey] !== "undefined"))) ? definition.foreignKey : key;
+      var foreignKey = key;
+      // Foreign keys should only be used on initialization of the model, or if
+      // specifically requested
+      if (options.useForeignKeys || options.initialize || options.reset) {
+        // Foreign key (if it exists) should only be used if the key does not exist in the json or it has the default value
+        foreignKey = (definition.foreignKey && (typeof json[key] === "undefined" || (defaults && json[key] === defaults[key] && typeof json[definition.foreignKey] !== "undefined"))) ? definition.foreignKey : key;
+      }
       var type = definition.type || definition;
       // Check that this property exists in the json, and import it if so...
       if (json[foreignKey] !== undefined && typeof json[foreignKey] === type) {

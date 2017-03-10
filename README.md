@@ -52,5 +52,9 @@ var MyStrictModel = Backbone.StrictModel.extend({
 });
 ```
 
-In the example above, doing `set("firstName", "Göran")` will result in `{ "name": "Göran" }`
-However, if you do `set({ "firstName": "Göran", "name": "Göran Smöran" })` firstName will be ignored and the data in `name` will be used instead.
+In the example above, doing `new MyStrictModel({ firstName: "Göran" })` will
+result in a model with `{ "name": "Göran" }`. However, when just setting
+properties, you will need to be explicit about wanting to use the foreign
+mappings. For example, `myModelInstance.set({ firstName: "Sven" })` will have
+no effect on the model instance, but
+`myModelInstance.set({ firstName: "Sven" }, { useForeignKeys: true })` will.
