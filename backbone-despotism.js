@@ -48,8 +48,8 @@
     constructor: function(attributes, options) {
       // Make sure that the options object when initializing a new instance of
       // the StrictModel always has { initialize: true }
-      attributes = attributes || (attributes = {});
-      options || (options = {});
+      attributes = attributes || {};
+      options = options || {};
       options.initialize = true;
       return Backbone.Model.call(this, attributes, options);
     },
@@ -86,18 +86,17 @@
   });
   
   function mapAttributes (json, props, defaults, options) {
-    var self = this;
     var attributes = {};
     options || (options = {});
     _.each(props, function(definition, key) {
       var foreignKey = key;
+      var type = definition.type || definition;
       // Foreign keys should only be used on initialization of the model, or if
       // specifically requested
       if (options.useForeignKeys || options.initialize || options.reset) {
         // Foreign key (if it exists) should only be used if the key does not exist in the json or it has the default value
         foreignKey = (definition.foreignKey && (typeof json[key] === "undefined" || (defaults && json[key] === defaults[key] && typeof json[definition.foreignKey] !== "undefined"))) ? definition.foreignKey : key;
       }
-      var type = definition.type || definition;
       // Check that this property exists in the json, and import it if so...
       if (json[foreignKey] !== undefined && typeof json[foreignKey] === type) {
         attributes[key] = json[foreignKey];
