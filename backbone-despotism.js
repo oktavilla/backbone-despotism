@@ -86,22 +86,43 @@
   });
   
   function mapAttributes (json, props, defaults, options) {
-    var attributes = {};
+    var attributes;
+    var foreignKeys;
     options || (options = {});
-    _.each(props, function(definition, key) {
-      var foreignKey = key;
+
+    // Foreign keys should only be used on initialization of the model, or if
+    // specifically requested
+    if (options.useForeignKeys || options.initialize || options.reset) {
+      // Find candidates for foreign keys to use
+      foreignKeys = _.reduce(props, function(result, definition, key) {
+        var foreignKey;
+        // Foreign key (if it exists) should only be used if the key does not
+        // exist in the json or it has the default value
+        foreignKey = (definition.foreignKey && (typeof json[key] === "undefined" || (defaults && json[key] === defaults[key] && typeof json[definition.foreignKey] !== "undefined"))) ? definition.foreignKey : undefined;
+        if (foreignKey) {
+          result[key] = foreignKey;
+        }
+        return result;
+      }, {});
+    }
+
+    // Get attribute map
+    attributes = _.reduce(props, function(result, definition, key) {
+      var foreignKey = foreignKeys ? foreignKeys[key] || key : key;
       var type = definition.type || definition;
-      // Foreign keys should only be used on initialization of the model, or if
-      // specifically requested
-      if (options.useForeignKeys || options.initialize || options.reset) {
-        // Foreign key (if it exists) should only be used if the key does not exist in the json or it has the default value
-        foreignKey = (definition.foreignKey && (typeof json[key] === "undefined" || (defaults && json[key] === defaults[key] && typeof json[definition.foreignKey] !== "undefined"))) ? definition.foreignKey : key;
+      // If the current key exists as a foreign key candidate, ignore it in the
+      // source data (because we'll want to use the value for
+      // the mapped property instead)
+      if (foreignKeys && typeof json[key] !== "undefined" && key === foreignKey && json[key] && _.find(foreignKeys, function(x) { return x === key; })) {
+        foreignKey = undefined;
       }
       // Check that this property exists in the json, and import it if so...
-      if (json[foreignKey] !== undefined && typeof json[foreignKey] === type) {
-        attributes[key] = json[foreignKey];
+      if (foreignKey && json[foreignKey] !== undefined && typeof json[foreignKey] === type) {
+        result[key] = json[foreignKey];
       }
-    });
+      return result;
+    }, {});
+
     return attributes;
   }
 }));
