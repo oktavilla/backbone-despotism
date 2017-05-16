@@ -1,5 +1,5 @@
 # Backbone Despotism
-A Backbone replacement model that enforces property declarations. 
+A Backbone replacement model that enforces property declarations.
 Exposes a model called `Backbone.StrictModel`.
 
 ## Creating a model with a properties definition
@@ -52,9 +52,5 @@ var MyStrictModel = Backbone.StrictModel.extend({
 });
 ```
 
-In the example above, doing `new MyStrictModel({ firstName: "Göran" })` will
-result in a model with `{ "name": "Göran" }`. However, when just setting
-properties, you will need to be explicit about wanting to use the foreign
-mappings. For example, `myModelInstance.set({ firstName: "Sven" })` will have
-no effect on the model instance, but
-`myModelInstance.set({ firstName: "Sven" }, { useForeignKeys: true })` will.
+In the example above, doing `new MyStrictModel({ firstName: "Göran" },
+{ useForeignKeys: true })` will result in a model with `{ "name": "Göran" }`.

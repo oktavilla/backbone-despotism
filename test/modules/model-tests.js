@@ -42,7 +42,7 @@ describe("Backbone Despotism", function() {
     model.set({
       firstName: "James",
       lastName: "Cauty"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"
@@ -51,7 +51,7 @@ describe("Backbone Despotism", function() {
     model.set({
       firstName: "James",
       surname: "Cauty"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"
@@ -61,7 +61,7 @@ describe("Backbone Despotism", function() {
       firstName: "James",
       lastName: "Cauty",
       surname: "Drummond"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"
@@ -95,7 +95,7 @@ describe("Backbone Despotism", function() {
       lastName: "Drummond"
     }, "Ignores default value if value exists");
   });
-  
+
   // Testing defaults with foreign keys
   it("Uses foreign keys with default values", function() {
     var MyStrictModel = Backbone.StrictModel.extend({
@@ -114,7 +114,7 @@ describe("Backbone Despotism", function() {
     model.set({
       firstName: "James",
       lastName: "Cauty"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"
@@ -123,7 +123,7 @@ describe("Backbone Despotism", function() {
     model.set({
       firstName: "James",
       surname: "Cauty"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"
@@ -133,7 +133,7 @@ describe("Backbone Despotism", function() {
       firstName: "James",
       lastName: "Cauty",
       surname: "Timelord"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"
@@ -142,7 +142,7 @@ describe("Backbone Despotism", function() {
     model.set({
       firstName: "James",
       surname: "Cauty"
-    });
+    }, { useForeignKeys: true });
     assert.deepEqual(model.attributes, {
       firstName: "James",
       lastName: "Cauty"

@@ -1,33 +1,30 @@
 /**
 * Strict model
 *  You can have property definitions on a model like so:
-* 
+*
 *  props: {
 *    "name": Backbone.StrictModel.type.STRING,
 *    "count": {
 *      "type": Backbone.StrictModel.type.NUMBER
 *    }
 *  }
-*  
-*  Properties will only be `set` on the model if they exist in the props 
+*
+*  Properties will only be `set` on the model if they exist in the props
 *  definition and match the type. All other properties will simply be ignored.
-* 
-*  You can also define data mappings. This is useful for transforming 
+*
+*  You can also define data mappings. This is useful for transforming
 *  a model into another type of model.
-* 
+*
 *  Example:
 *  props: {
 *    "name": {
 *      "type": Backbone.StrictModel.type.STRING,
 *      "foreignKey": "firstName"
-*    }   
+*    }
 *  }
-* 
-*  In the example above, doing `new MyStrictModel({ firstName: "Göran" })` will result in a model
-*  with `{ "name": "Göran" }`. However, when just setting properties, you will need to be
-*  explicit about wanting to use the foreign mappings. For example, `myModelInstance.set({ firstName: "Sven" })`
-*  will have no effect on the model instance, but
-*  `myModelInstance.set({ firstName: "Sven" }, { useForeignKeys: true })` will.
+*
+*  In the example above, doing `new MyStrictModel({ firstName: "Göran" }, { useForeignKeys: true })` will result in a model
+*  with `{ "name": "Göran" }`.
 */
 (function(root, factory) {
   "use strict";
@@ -45,15 +42,6 @@
   }
 } (this, function(exports, Backbone, _) {
   Backbone.StrictModel = Backbone.Model.extend({
-    constructor: function(attributes, options) {
-      // Make sure that the options object when initializing a new instance of
-      // the StrictModel always has { initialize: true }
-      attributes = attributes || {};
-      options = options || {};
-      options.initialize = true;
-      return Backbone.Model.call(this, attributes, options);
-    },
-
     set: function(key, value, options) {
       var attrs;
       if (key === null) {
@@ -66,16 +54,12 @@
       } else {
         (attrs = {})[key] = value;
       }
-      if (this.props) {
+      options = options || {};
+      if (this.props && !options.unset) {
         attrs = mapAttributes(attrs, this.props, this.defaults, options);
       }
-      return Backbone.Model.prototype.set.apply(this, [attrs, options || {}]);
+      return Backbone.Model.prototype.set.apply(this, [attrs, options]);
     },
-    
-    unset: function (key, options) {
-      // Avoiding strict set method for unset
-      return Backbone.Model.prototype.set.call(this, key, void 0, _.extend({}, options, { unset: true }));
-    }
   }, {
     type: {
       STRING: "string",
@@ -84,15 +68,13 @@
       BOOLEAN: "boolean"
     }
   });
-  
+
   function mapAttributes (json, props, defaults, options) {
     var attributes;
     var foreignKeys;
-    options || (options = {});
 
-    // Foreign keys should only be used on initialization of the model, or if
-    // specifically requested
-    if (options.useForeignKeys || options.initialize || options.reset) {
+    // Foreign keys should only be used if specifically requested
+    if (options.useForeignKeys) {
       // Find candidates for foreign keys to use
       foreignKeys = _.reduce(props, function(result, definition, key) {
         var foreignKey;
